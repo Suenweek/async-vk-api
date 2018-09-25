@@ -1,0 +1,6 @@
+__title__ = "async-vk-api"
+__version__ = "0.0.1"
+__description__ = "Python async VK API."
+__url__ = "https://github.com/Suenweek/async-vk-api"
+__author__ = "Roman Novatorov"
+__author_email__ = "roman.novatorov@gmail.com"
