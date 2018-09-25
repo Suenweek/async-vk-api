@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 asks = "*"
-trio = "*"
 
 [dev-packages]
 async-vk-api = {editable = true, path = "."}

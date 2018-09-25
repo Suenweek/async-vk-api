@@ -1,6 +1,5 @@
 import sys
 import asks
-asks.init('trio')
 
 
 class ApiError(Exception):
@@ -9,22 +8,20 @@ class ApiError(Exception):
 
 class Api:
 
-    DEFAULT_VERSION = '5.85'
-    BASE_URL = 'https://api.vk.com'
-    BASE_ENDPOINT = '/method'
-
     def __init__(
         self,
         access_token,
-        version=DEFAULT_VERSION,
-        base_url=BASE_URL,
-        base_endpoint=BASE_ENDPOINT
+        version='5.85',
+        base_url='https://api.vk.com',
+        base_endpoint='/method',
+        conns=3
     ):
         self.access_token = access_token
         self.version = version
         self.session = asks.Session(
             base_location=base_url,
-            endpoint=base_endpoint
+            endpoint=base_endpoint,
+            connections=conns
         )
 
     async def __call__(self, method_name, **params):

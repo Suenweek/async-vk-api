@@ -17,5 +17,5 @@ setup(
     url=about['__url__'],
     author=about['__author__'],
     author_email=about['__author_email__'],
-    install_requires=['asks', 'trio']
+    install_requires=['asks']
 )
