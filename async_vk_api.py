@@ -8,20 +8,20 @@ class ApiError(Exception):
 
 class Api:
 
+    # TODO: Add RPS limit.
+
     def __init__(
         self,
         access_token,
         version='5.85',
         base_url='https://api.vk.com',
-        base_endpoint='/method',
-        conns=3
+        base_endpoint='/method'
     ):
         self.access_token = access_token
         self.version = version
         self.session = asks.Session(
             base_location=base_url,
-            endpoint=base_endpoint,
-            connections=conns
+            endpoint=base_endpoint
         )
 
     async def __call__(self, method_name, **params):
