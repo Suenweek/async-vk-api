@@ -1,4 +1,3 @@
-import sys
 import asks
 
 
@@ -41,20 +40,20 @@ class Api:
             raise ApiError(payload['error'])
 
     def __getattr__(self, item):
-        return MethodGroup(name=item, api=self)
+        return _MethodGroup(name=item, api=self)
 
 
-class MethodGroup:
+class _MethodGroup:
 
     def __init__(self, name, api):
         self.name = name
         self.api = api
 
     def __getattr__(self, item):
-        return Method(name=item, group=self)
+        return _Method(name=item, group=self)
 
 
-class Method:
+class _Method:
 
     def __init__(self, name, group):
         self.name = name
@@ -66,6 +65,3 @@ class Method:
 
     async def __call__(self, **params):
         return await self.group.api(self.full_name, **params)
-
-
-sys.modules[__name__] = Api
