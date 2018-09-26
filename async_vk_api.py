@@ -1,4 +1,6 @@
+import os
 import asks
+
 
 init = asks.init
 
@@ -13,7 +15,7 @@ class Api:
 
     def __init__(
         self,
-        access_token,
+        access_token=os.getenv('VK_ACCESS_TOKEN'),
         version='5.85',
         base_url='https://api.vk.com',
         base_endpoint='/method'

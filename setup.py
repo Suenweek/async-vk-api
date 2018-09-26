@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='async-vk-api',
-    version='0.0.5',
+    version='0.0.6',
     description='Python async VK API',
     py_modules=['async_vk_api'],
     url='https://github.com/Suenweek/async-vk-api',
