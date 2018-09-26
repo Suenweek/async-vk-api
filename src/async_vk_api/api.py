@@ -1,13 +1,10 @@
 import os
-import trio
 import asks
 
+from .sync import Throttle
+from .errors import ApiError
 
-asks.init(trio)
-
-
-class ApiError(Exception):
-    pass
+asks.init('trio')
 
 
 class Api:
@@ -23,44 +20,22 @@ class Api:
     ):
         self.access_token = access_token
         self.version = version
-        self.session = asks.Session(
+        self._session = asks.Session(
             base_location=base_url,
             endpoint=base_endpoint,
             connections=connections
         )
-        self._rate = 1 / requests_per_second
-        self._lock = trio.Lock()
+        self._throttle = Throttle(rate=1/requests_per_second)
 
-    async def __call__(self, method_name, **params):
-        response = None
-
-        async def func():
-            nonlocal response
-            response = await self._call(method_name, **params)
-
-        tick_finished = trio.Event()
-
-        async def tick():
-            await trio.sleep(self._rate)
-            tick_finished.set()
-
-        await self._lock.acquire()
-
-        async with trio.open_nursery() as nursery:
-            nursery.start_soon(func)
-            nursery.start_soon(tick)
-
-            await tick_finished.wait()
-            self._lock.release()
-
-        return response
+    async def __call__(self, *args, **kwargs):
+        return await self._throttle(self._call, *args, **kwargs)
 
     async def _call(self, method_name, **params):
         params.update(
             access_token=self.access_token,
             v=self.version
         )
-        response = await self.session.get(
+        response = await self._session.get(
             path=f'/{method_name}',
             params=params
         )
