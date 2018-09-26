@@ -1,6 +1,7 @@
 # async-vk-api
 
-Async VK API built with [asks](https://github.com/theelous3/asks).
+Async VK API built with [asks](https://github.com/theelous3/asks)
+and [trio](https://github.com/python-trio/trio).
 
 Inspired by [vk](https://github.com/voronind/vk).
 
@@ -17,8 +18,6 @@ pip install git+https://github.com/Suenweek/async-vk-api#egg=async-vk-api
 ```python
 import trio
 import async_vk_api as vk
-
-vk.init(trio)
 
 vk_api = vk.Api('YOUR_ACCESS_TOKEN')
 

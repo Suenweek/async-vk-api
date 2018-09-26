@@ -1,8 +1,9 @@
 import os
+import trio
 import asks
 
 
-init = asks.init
+asks.init(trio)
 
 
 class ApiError(Exception):
@@ -11,31 +12,38 @@ class ApiError(Exception):
 
 class Api:
 
-    # TODO: Add RPS limit.
-
     def __init__(
         self,
         access_token=os.getenv('VK_ACCESS_TOKEN'),
         version='5.85',
         base_url='https://api.vk.com',
-        base_endpoint='/method'
+        base_endpoint='/method',
+        connections=1,
+        requests_per_second=3,
     ):
         self.access_token = access_token
         self.version = version
         self.session = asks.Session(
             base_location=base_url,
-            endpoint=base_endpoint
+            endpoint=base_endpoint,
+            connections=connections
         )
+        self._rate = 1 / requests_per_second
+        self._lock = trio.Lock()
 
     async def __call__(self, method_name, **params):
         params.update(
             access_token=self.access_token,
             v=self.version
         )
-        response = await self.session.get(
-            path=f'/{method_name}',
-            params=params
-        )
+
+        async with self._lock:
+            response = await self.session.get(
+                path=f'/{method_name}',
+                params=params
+            )
+            await trio.sleep(self._rate)
+
         payload = response.json()
 
         try:
