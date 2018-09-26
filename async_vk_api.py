@@ -1,5 +1,7 @@
 import asks
 
+init = asks.init
+
 
 class ApiError(Exception):
     pass
