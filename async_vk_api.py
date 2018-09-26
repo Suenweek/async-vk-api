@@ -32,18 +32,38 @@ class Api:
         self._lock = trio.Lock()
 
     async def __call__(self, method_name, **params):
+        response = None
+
+        async def func():
+            nonlocal response
+            response = await self._call(method_name, **params)
+
+        tick_finished = trio.Event()
+
+        async def tick():
+            await trio.sleep(self._rate)
+            tick_finished.set()
+
+        await self._lock.acquire()
+
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(func)
+            nursery.start_soon(tick)
+
+            await tick_finished.wait()
+            self._lock.release()
+
+        return response
+
+    async def _call(self, method_name, **params):
         params.update(
             access_token=self.access_token,
             v=self.version
         )
-
-        async with self._lock:
-            response = await self.session.get(
-                path=f'/{method_name}',
-                params=params
-            )
-            await trio.sleep(self._rate)
-
+        response = await self.session.get(
+            path=f'/{method_name}',
+            params=params
+        )
         payload = response.json()
 
         try:
