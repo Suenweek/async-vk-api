@@ -44,3 +44,18 @@ def throttled(rate):
         return wrapper
 
     return decorator
+
+
+class TimedLock:
+
+    def __init__(self, nursery):
+        self.nursery = nursery
+        self._sema = trio.Semaphore(1)
+
+    async def acquire(self, release_after):
+        await self._sema.acquire()
+        self.nursery.start_soon(self._release, release_after)
+
+    async def _release(self, release_after):
+        await trio.sleep(release_after)
+        self._sema.release()
