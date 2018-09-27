@@ -1,8 +1,7 @@
 import os
 import asks
 
-from .sync import Throttle
-from .errors import ApiError
+from . import sync, errors
 
 asks.init('trio')
 
@@ -25,26 +24,24 @@ class Api:
             endpoint=base_endpoint,
             connections=connections
         )
-        self._throttle = Throttle(rate=1/requests_per_second)
+        self._throttler = sync.Throttler(rate=1/requests_per_second)
 
-    async def __call__(self, *args, **kwargs):
-        return await self._throttle(self._call, *args, **kwargs)
-
-    async def _call(self, method_name, **params):
+    async def __call__(self, method_name, **params):
         params.update(
             access_token=self.access_token,
             v=self.version
         )
-        response = await self._session.get(
-            path=f'/{method_name}',
-            params=params
-        )
+        with self._throttler():
+            response = await self._session.get(
+                path=f'/{method_name}',
+                params=params
+            )
         payload = response.json()
 
         try:
             return payload['response']
         except KeyError:
-            raise ApiError(payload['error'])
+            raise errors.ApiError(payload['error'])
 
     def __getattr__(self, item):
         return _MethodGroup(name=item, api=self)

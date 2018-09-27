@@ -1,5 +1,5 @@
 __title__ = 'async-vk-api'
-__version__ = '0.0.9'
+__version__ = '0.0.10'
 __description__ = 'Async VK API built with asks and trio'
 __url__ = 'https://github.com/Suenweek/async-vk-api'
 __author__ = 'Roman Novatorov'
