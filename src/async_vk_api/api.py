@@ -1,9 +1,8 @@
 import os
 import asks
+asks.init('trio')
 
 from . import sync, errors
-
-asks.init('trio')
 
 
 class Api:
@@ -31,7 +30,7 @@ class Api:
             access_token=self.access_token,
             v=self.version
         )
-        with self._throttler():
+        async with self._throttler():
             response = await self._session.get(
                 path=f'/{method_name}',
                 params=params
