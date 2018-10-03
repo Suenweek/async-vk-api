@@ -6,6 +6,8 @@ class Throttler:
 
     def __init__(self, rate):
         self.rate = rate
+        # Using binary `trio.Semaphore` instead of `trio.Lock`
+        # to be able to release it from the child task.
         self._lock = trio.Semaphore(1)
 
     @contextlib.asynccontextmanager
