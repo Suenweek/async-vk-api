@@ -19,10 +19,10 @@ pip install git+https://github.com/Suenweek/async-vk-api#egg=async-vk-api
 import trio
 import async_vk_api as vk
 
-vk_api = vk.Api('YOUR_ACCESS_TOKEN')
+api = vk.Api('YOUR_ACCESS_TOKEN')
 
 async def main():
-    users = await vk_api.users.get(user_ids=1)
+    users = await api.users.get(user_ids=1)
     print(users)
 
 trio.run(main)
