@@ -4,11 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-asks = "*"
-trio = "*"
+async-vk-api = {editable = true, path = "."}
 
 [dev-packages]
-async-vk-api = {editable = true, path = "."}
 
 [requires]
 python_version = "3.7"

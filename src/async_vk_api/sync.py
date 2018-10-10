@@ -1,4 +1,5 @@
-import contextlib
+from contextlib import asynccontextmanager
+
 import trio
 
 
@@ -10,7 +11,7 @@ class Throttler:
         # to be able to release it from the child task.
         self._lock = trio.Semaphore(1)
 
-    @contextlib.asynccontextmanager
+    @asynccontextmanager
     async def __call__(self):
         await self._lock.acquire()
         async with trio.open_nursery() as nursery:
