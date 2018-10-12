@@ -1,10 +1,11 @@
 import os
-
 import asks
-asks.init('trio')
 
 from .sync import Throttler
 from .errors import ApiError
+
+
+asks.init('trio')
 
 
 class Api:
@@ -41,8 +42,8 @@ class Api:
 
         try:
             return payload['response']
-        except KeyError:
-            raise ApiError(payload['error'])
+        except KeyError as exc:
+            raise ApiError(payload['error']) from exc
 
     def __getattr__(self, item):
         return _MethodGroup(name=item, api=self)
