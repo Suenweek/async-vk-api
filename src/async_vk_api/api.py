@@ -15,7 +15,7 @@ class Api:
         access_token=os.getenv('VK_ACCESS_TOKEN'),
         version='5.85',
         base_url='https://api.vk.com',
-        base_endpoint='/method',
+        endpoint='/method',
         connections=1,
         requests_per_second=3,
     ):
@@ -23,7 +23,7 @@ class Api:
         self.version = version
         self._session = asks.Session(
             base_location=base_url,
-            endpoint=base_endpoint,
+            endpoint=endpoint,
             connections=connections
         )
         self._throttler = Throttler(rate=1/requests_per_second)
@@ -33,11 +33,13 @@ class Api:
             access_token=self.access_token,
             v=self.version
         )
+
         async with self._throttler():
             response = await self._session.get(
                 path=f'/{method_name}',
                 params=params
             )
+
         payload = response.json()
 
         try:
