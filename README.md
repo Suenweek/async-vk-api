@@ -8,6 +8,12 @@ Inspired by [vk](https://github.com/voronind/vk).
 
 ## Installation
 
+#### Stable from PyPi
+```bash
+pip install async-vk-api
+```
+
+#### Latest from Github
 ```bash
 pip install git+https://github.com/Suenweek/async-vk-api#egg=async-vk-api
 ```
