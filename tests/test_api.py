@@ -12,15 +12,7 @@ async def test_api(api):
     assert response['method_name'] == 'users.get'
     assert response['params']['user_ids'] == '1,2,3'
     assert response['params']['fields'] == 'city,verified'
-
-    # Response OK
-    response = await api.users.get(
-        user_ids='1,2,3',
-        fields='city,verified'
-    )
-    assert response['method_name'] == 'users.get'
-    assert response['params']['user_ids'] == '1,2,3'
-    assert response['params']['fields'] == 'city,verified'
+    assert 'v' in response['params']
 
     # Response error
     try:
@@ -34,5 +26,6 @@ async def test_api(api):
         assert response['method_name'] == 'users.get'
         assert response['params']['user_ids'] == '1,2,3'
         assert response['params']['fields'] == 'city,verified'
+        assert 'v' in response['params']
     else:
         pytest.fail()
