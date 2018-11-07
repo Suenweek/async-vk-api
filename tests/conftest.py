@@ -2,7 +2,7 @@ from functools import partial
 
 import trio
 import pytest
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request
 from werkzeug.serving import BaseWSGIServer, WSGIRequestHandler
 
 from async_vk_api.api import Api
@@ -24,7 +24,7 @@ class Server(BaseWSGIServer):
 
 
 @pytest.fixture(name='api')
-async def fixture_api():
+async def fixture_api(nursery):
     host = 'localhost'
     port = 5000
 
@@ -47,14 +47,11 @@ async def fixture_api():
 
     api = Api(base_url=base_url, endpoint=base_endpoint)
 
-    async with trio.open_nursery() as nursery:
-        nursery.start_soon(partial(
-            trio.run_sync_in_worker_thread,
-            server.serve_forever,
-            cancellable=True
-        ))
-        await server_ready.wait()
+    nursery.start_soon(partial(
+        trio.run_sync_in_worker_thread,
+        server.serve_forever,
+        cancellable=True
+    ))
+    await server_ready.wait()
 
-        yield api
-
-        nursery.cancel_scope.cancel()
+    yield api
