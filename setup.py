@@ -1,22 +1,14 @@
-import os
-from codecs import open
 from setuptools import setup, find_packages
 
 
-here_dir = os.path.abspath(os.path.dirname(__file__))
-about = {}
-with open(os.path.join(here_dir, 'src', 'async_vk_api', '__about__.py')) as f:
-    exec(f.read(), about)
-
-
 setup(
-    name=about['__title__'],
-    version=about['__version__'],
-    description=about['__description__'],
+    name='async-vk-api',
+    version='0.1.0',
+    description='Async VK API built with asks and trio',
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    url=about['__url__'],
-    author=about['__author__'],
-    author_email=about['__author_email__'],
+    url='https://github.com/Suenweek/async-vk-api',
+    author='Roman Novatorov',
+    author_email='roman.novatorov@gmail.com',
     install_requires=['asks', 'trio']
 )
