@@ -10,5 +10,5 @@ setup(
     url='https://github.com/Suenweek/async-vk-api',
     author='Roman Novatorov',
     author_email='roman.novatorov@gmail.com',
-    install_requires=['asks', 'attr', 'trio']
+    install_requires=['asks', 'attrs', 'trio']
 )
