@@ -1,43 +1,27 @@
-import os
-import asks
+import attr
 
-from .sync import Throttler
 from .errors import ApiError
+from .factories import make_session, make_throttler
 
 
-asks.init('trio')
-
-
+@attr.s
 class Api:
 
-    def __init__(
-        self,
-        access_token=os.getenv('VK_ACCESS_TOKEN'),
-        version='5.85',
-        base_url='https://api.vk.com',
-        endpoint='/method',
-        connections=1,
-        requests_per_second=3,
-    ):
-        self.access_token = access_token
-        self.version = version
-        self._session = asks.Session(
-            base_location=base_url,
-            endpoint=endpoint,
-            connections=connections
-        )
-        self._throttler = Throttler(rate=1/requests_per_second)
+    _access_token = attr.ib()
+    _version = attr.ib()
+
+    _session = attr.ib(factory=make_session)
+    _throttler = attr.ib(factory=make_throttler)
 
     async def __call__(self, method_name, **params):
-        params.update(
-            access_token=self.access_token,
-            v=self.version
-        )
-
         async with self._throttler():
             response = await self._session.get(
                 path=f'/{method_name}',
-                params=params
+                params={
+                    'access_token': self._access_token,
+                    'v': self._version,
+                    **params
+                }
             )
 
         payload = response.json()
@@ -48,24 +32,24 @@ class Api:
             raise ApiError(payload['error']) from exc
 
     def __getattr__(self, item):
-        return _MethodGroup(name=item, api=self)
+        return MethodGroup(name=item, api=self)
 
 
-class _MethodGroup:
+@attr.s
+class MethodGroup:
 
-    def __init__(self, name, api):
-        self.name = name
-        self.api = api
+    name = attr.ib()
+    api = attr.ib()
 
     def __getattr__(self, item):
-        return _Method(name=item, group=self)
+        return Method(name=item, group=self)
 
 
-class _Method:
+@attr.s
+class Method:
 
-    def __init__(self, name, group):
-        self.name = name
-        self.group = group
+    name = attr.ib()
+    group = attr.ib()
 
     @property
     def full_name(self):
