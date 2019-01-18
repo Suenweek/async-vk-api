@@ -1,11 +1,16 @@
-import trio
+import os
 import itertools
-import async_vk_api as vk
+
+import trio
+import async_vk_api
 
 
 async def get_all_posts(owner_id):
+    api = async_vk_api.Api(
+        access_token=os.getenv('VK_ACCESS_TOKEN'),
+        version=os.getenv('VK_API_VERSION')
+    )
     max_count = 100
-    api = vk.Api()
 
     for offset in itertools.count(step=max_count):
         response = await api.wall.get(

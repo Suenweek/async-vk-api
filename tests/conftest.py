@@ -5,7 +5,7 @@ import pytest
 from flask import Flask, jsonify, request
 from werkzeug.serving import BaseWSGIServer, WSGIRequestHandler
 
-from async_vk_api.api import Api
+from async_vk_api.api import Api, make_session
 
 
 server_ready = trio.Event()
@@ -28,12 +28,12 @@ async def fixture_api(nursery):
     host = 'localhost'
     port = 5000
 
-    base_url = f'http://{host}:{port}'
-    base_endpoint = '/method'
+    base_location = f'http://{host}:{port}'
+    endpoint = '/method'
 
     app = Flask(__name__)
 
-    @app.route(f'{base_endpoint}/<name>', methods=['GET'])
+    @app.route(f'{endpoint}/<name>', methods=['GET'])
     def method(name):
         key = request.args.get('_key', 'response')
         return jsonify({
@@ -45,7 +45,12 @@ async def fixture_api(nursery):
 
     server = Server(host=host, port=port, app=app, handler=Handler)
 
-    api = Api(base_url=base_url, endpoint=base_endpoint)
+    session = make_session(base_location=base_location,
+                           endpoint=endpoint)
+
+    api = Api(access_token='test_access_token',
+              version='test_version',
+              session=session)
 
     nursery.start_soon(partial(
         trio.run_sync_in_worker_thread,
