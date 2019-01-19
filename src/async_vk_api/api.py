@@ -1,27 +1,19 @@
-import attr
-
 from .errors import ApiError
-from .factories import make_session, make_throttler
 
 
-@attr.s
 class Api:
 
-    _access_token = attr.ib()
-    _version = attr.ib()
-
-    _session = attr.ib(factory=make_session)
-    _throttler = attr.ib(factory=make_throttler)
+    def __init__(self, access_token, version, session, throttler):
+        self._access_token = access_token
+        self._version = version
+        self._session = session
+        self._throttler = throttler
 
     async def __call__(self, method_name, **params):
         async with self._throttler():
             response = await self._session.get(
                 path=f'/{method_name}',
-                params={
-                    'access_token': self._access_token,
-                    'v': self._version,
-                    **params
-                }
+                params={**self._default_params, **params}
             )
 
         payload = response.json()
@@ -34,22 +26,29 @@ class Api:
     def __getattr__(self, item):
         return MethodGroup(name=item, api=self)
 
+    @property
+    def _default_params(self):
+        return {
+            'access_token': self._access_token,
+            'v': self._version,
+        }
 
-@attr.s
+
 class MethodGroup:
 
-    name = attr.ib()
-    api = attr.ib()
+    def __init__(self, name, api):
+        self.name = name
+        self.api = api
 
     def __getattr__(self, item):
         return Method(name=item, group=self)
 
 
-@attr.s
 class Method:
 
-    name = attr.ib()
-    group = attr.ib()
+    def __init__(self, name, group):
+        self.name = name
+        self.group = group
 
     @property
     def full_name(self):

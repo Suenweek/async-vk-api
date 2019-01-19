@@ -4,18 +4,22 @@ import pytest
 from async_vk_api.throttler import Throttler
 
 
-@pytest.mark.parametrize(['n_workers', 'rate', 'job_duration'], [
+@pytest.mark.parametrize([
+    'n_workers', 'frequency', 'period', 'job_duration'
+], [
     # Fast workers
-    (4, 2, 1),
+    [4, 2, 0.5, 1],
 
     # Slow workers
-    (4, 2, 3)
+    [4, 2, 0.5, 3]
 ])
-async def test_throttler(n_workers, rate, job_duration, autojump_clock):
+async def test_throttler(n_workers, frequency, period, job_duration,
+                         autojump_clock):
     calls = []
 
-    throttler = Throttler(rate)
+    throttler = Throttler(frequency)
     assert not throttler.locked
+    assert throttler.period == pytest.approx(period)
 
     async def worker():
         async with throttler():
@@ -30,4 +34,4 @@ async def test_throttler(n_workers, rate, job_duration, autojump_clock):
     assert n_workers == len(calls)
 
     for a, b in zip(calls, calls[1:]):
-        assert pytest.approx(rate, b - a)
+        assert b - a == pytest.approx(throttler.period)

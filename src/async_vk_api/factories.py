@@ -1,6 +1,22 @@
 import asks
 
+from .api import Api
 from .throttler import Throttler
+
+
+def make_api(access_token, version, session=None, throttler=None):
+    if session is None:
+        session = make_session()
+
+    if throttler is None:
+        throttler = make_throttler()
+
+    return Api(
+        access_token=access_token,
+        version=version,
+        session=session,
+        throttler=throttler
+    )
 
 
 def make_session(
@@ -17,5 +33,5 @@ def make_session(
     )
 
 
-def make_throttler(requests_per_second=3):
-    return Throttler(rate=1/requests_per_second)
+def make_throttler(frequency=3):
+    return Throttler(frequency=frequency)
