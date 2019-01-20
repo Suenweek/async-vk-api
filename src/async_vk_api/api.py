@@ -1,4 +1,9 @@
+import logging
+
 from .errors import ApiError
+
+
+logger = logging.getLogger(__name__)
 
 
 class Api:
@@ -15,13 +20,13 @@ class Api:
                 path=f'/{method_name}',
                 params={**self._default_params, **params}
             )
-
-        payload = response.json()
+            payload = response.json()
+            logger.info('%s(%s) -> %s', method_name, params, payload)
 
         try:
             return payload['response']
-        except KeyError as exc:
-            raise ApiError(payload['error']) from exc
+        except KeyError:
+            raise ApiError(payload['error']) from None
 
     def __getattr__(self, item):
         return MethodGroup(name=item, api=self)

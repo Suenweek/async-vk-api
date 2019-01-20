@@ -6,9 +6,9 @@ import async_vk_api
 
 
 async def get_all_posts(owner_id):
-    api = async_vk_api.Api(
+    api = async_vk_api.make_api(
         access_token=os.getenv('VK_API_ACCESS_TOKEN'),
-        version=os.getenv('VK_API_VERSION')
+        version='5.92'
     )
     max_count = 100
 
