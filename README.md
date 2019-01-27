@@ -27,7 +27,7 @@ import os
 import trio
 import async_vk_api
 
-api = async_vk_api.Api(
+api = async_vk_api.make_api(
     access_token=os.getenv('VK_API_ACCESS_TOKEN'),
     version='5.92'
 )
