@@ -14,10 +14,8 @@ class Throttler:
     @asynccontextmanager
     async def __call__(self):
         await self._semaphore.acquire()
-
         async with trio.open_nursery() as nursery:
-            nursery.start_soon(self._tick)
-
+            nursery.start_soon(self._delayed_release)
             try:
                 yield
             except (Exception, trio.Cancelled):
@@ -32,6 +30,6 @@ class Throttler:
     def period(self):
         return 1 / self.frequency
 
-    async def _tick(self):
+    async def _delayed_release(self):
         await trio.sleep(self.period)
         self._semaphore.release()
