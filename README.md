@@ -29,14 +29,15 @@ import async_vk_api
 
 api = async_vk_api.make_api(
     access_token=os.getenv('VK_API_ACCESS_TOKEN'),
-    version='5.92'
+    version='5.89'
 )
 
 async def main():
     users = await api.users.get(user_ids=1)
     print(users)
 
-trio.run(main)
+if __name__ == '__main__':
+    trio.run(main)
 ```
 
 For the list of available methods see https://vk.com/dev/methods.

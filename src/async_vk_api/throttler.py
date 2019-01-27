@@ -14,9 +14,15 @@ class Throttler:
     @asynccontextmanager
     async def __call__(self):
         await self._semaphore.acquire()
+
         async with trio.open_nursery() as nursery:
             nursery.start_soon(self._tick)
-            yield
+
+            try:
+                yield
+            except (Exception, trio.Cancelled):
+                self._semaphore.release()
+                raise
 
     @property
     def locked(self):

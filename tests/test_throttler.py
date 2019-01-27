@@ -13,11 +13,11 @@ from async_vk_api import Throttler
     # Slow workers
     [4, 2, 0.5, 3]
 ])
-async def test_throttler(n_workers, frequency, period, job_duration,
-                         autojump_clock):
+async def test_throttling(n_workers, frequency, period, job_duration,
+                          autojump_clock):
     calls = []
+    throttler = Throttler(frequency=frequency)
 
-    throttler = Throttler(frequency)
     assert not throttler.locked
     assert throttler.period == pytest.approx(period)
 
@@ -35,3 +35,36 @@ async def test_throttler(n_workers, frequency, period, job_duration,
 
     for a, b in zip(calls, calls[1:]):
         assert b - a == pytest.approx(throttler.period)
+
+
+async def test_error_handling(autojump_clock):
+    throttler = Throttler(frequency=1)
+    exc = RuntimeError
+
+    async def erroneous():
+        async with throttler():
+            raise exc
+
+    with pytest.raises(exc):
+        await erroneous()
+
+    assert not throttler.locked
+
+    with trio.fail_after(2):
+        with pytest.raises(exc):
+            await erroneous()
+
+
+async def test_cancellation(autojump_clock):
+    throttler = Throttler(frequency=1)
+
+    async def cancellable(task_status=trio.TASK_STATUS_IGNORED):
+        async with throttler():
+            task_status.started()
+            await trio.sleep_forever()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(cancellable)
+        nursery.cancel_scope.cancel()
+
+    assert not throttler.locked
