@@ -1,6 +1,6 @@
 import pytest
 
-from async_vk_api.errors import ApiError
+from async_vk_api import ApiError
 
 
 async def test_api(api):
