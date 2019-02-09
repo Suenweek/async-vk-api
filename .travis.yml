@@ -10,4 +10,4 @@ install:
   - pipenv update
 
 script:
-  - pytest
+  - pipenv run pytest tests
