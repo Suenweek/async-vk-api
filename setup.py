@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='async-vk-api',
-    version='0.4.1',
+    version='0.4.3',
     description='Async VK API built with asks and trio',
     packages=find_packages('src'),
     package_dir={'': 'src'},
