@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/Suenweek/async-vk-api.svg?branch=master)](https://travis-ci.com/Suenweek/async-vk-api)
+
 # async-vk-api
 
 Async VK API built with [asks](https://github.com/theelous3/asks)
