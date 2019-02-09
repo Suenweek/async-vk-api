@@ -11,6 +11,3 @@ flask = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-trio = "*"
-
-[requires]
-python_version = "3.7"
