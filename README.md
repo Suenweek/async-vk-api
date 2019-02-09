@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/Suenweek/async-vk-api.svg?branch=master)](https://travis-ci.com/Suenweek/async-vk-api)
+[![codecov](https://codecov.io/gh/Suenweek/async-vk-api/branch/master/graph/badge.svg)](https://codecov.io/gh/Suenweek/async-vk-api)
 
 # async-vk-api
 
@@ -6,7 +7,6 @@ Async VK API built with [asks](https://github.com/theelous3/asks)
 and [trio](https://github.com/python-trio/trio).
 
 Inspired by [vk](https://github.com/voronind/vk).
-
 
 ## Installation
 
@@ -19,7 +19,6 @@ pip install async-vk-api
 ```bash
 pip install git+https://github.com/Suenweek/async-vk-api#egg=async-vk-api
 ```
-
 
 ## Usage
 
