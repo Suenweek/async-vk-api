@@ -1,3 +1,4 @@
+import json
 import logging
 
 from .errors import ApiError
@@ -8,35 +9,46 @@ logger = logging.getLogger(__name__)
 
 class Api:
 
-    def __init__(self, access_token, version, session, throttler, retry):
+    def __init__(self, access_token, version, session, throttler,
+                 request_wrapper=None, object_hook=None):
         self._access_token = access_token
         self._version = version
         self._session = session
         self._throttler = throttler
-        self._retry = retry
+        self._request_wrapper = request_wrapper
+        self._object_hook = object_hook
 
     async def __call__(self, method_name, **params):
-        async def api_call():
+        async def make_request():
             async with self._throttler():
-                response = await self._session.get(
+                return await self._session.get(
                     path=f'/{method_name}',
-                    params={**self._default_params, **params}
+                    params={**self._meta_params, **params}
                 )
-                return response.json()
 
-        json = await self._retry(api_call)()
-        logger.info('%s(%s) -> %s', method_name, params, json)
+        if self._request_wrapper is not None:
+            make_request = self._request_wrapper(make_request)
+
+        response = await make_request()
+
+        # TODO:
+        #   asks<=0.2.0 cannot forward `response.json` kwargs to `json.loads`.
+        #   Use kwargs forwarding when it is available.
+        # payload = response.json(object_hook=self._object_hook)
+        payload = json.loads(response.body, object_hook=self._object_hook)
+
+        logger.info('%s(%s) -> %s', method_name, params, payload)
 
         try:
-            return json['response']
+            return payload['response']
         except KeyError:
-            raise ApiError(json['error']) from None
+            raise ApiError(payload['error']) from None
 
-    def __getattr__(self, item):
-        return MethodGroup(name=item, api=self)
+    def __getattr__(self, key):
+        return MethodGroup(name=key, api=self)
 
     @property
-    def _default_params(self):
+    def _meta_params(self):
         return {
             'access_token': self._access_token,
             'v': self._version,
@@ -49,8 +61,8 @@ class MethodGroup:
         self.name = name
         self.api = api
 
-    def __getattr__(self, item):
-        return Method(name=item, group=self)
+    def __getattr__(self, key):
+        return Method(name=key, group=self)
 
 
 class Method:

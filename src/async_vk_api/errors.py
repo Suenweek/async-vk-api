@@ -1,2 +1,2 @@
 class ApiError(Exception):
-    pass
+    """API error occurred."""

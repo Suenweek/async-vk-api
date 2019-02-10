@@ -1,7 +1,7 @@
 import trio
 import pytest
 
-from async_vk_api import Throttler
+from async_vk_api.throttler import Throttler
 
 
 @pytest.mark.parametrize([

@@ -3,7 +3,7 @@ from functools import wraps
 import trio
 
 
-def retry(exceptions, attempts=2, delay=0):
+def on(exceptions, attempts=2, delay=0):
 
     def decorator(func):
 

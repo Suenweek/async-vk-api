@@ -1,27 +1,36 @@
 import asks
-from asks.errors import BadHttpResponse
+import asks.errors as asks_errors
 
-from . import utils
+from . import retry
 from .api import Api
+from .namespace import Namespace
 from .throttler import Throttler
 
 
-def make_api(access_token, version, session=None, throttler=None, retry=None):
+def make_api(
+    access_token,
+    version,
+    session=None,
+    throttler=None,
+    request_wrapper=None,
+    object_hook=Namespace.from_dict
+):
     if session is None:
         session = make_session()
 
     if throttler is None:
         throttler = make_throttler()
 
-    if retry is None:
-        retry = make_retry()
+    if request_wrapper is None:
+        request_wrapper = make_request_wrapper()
 
     return Api(
         access_token=access_token,
         version=version,
         session=session,
         throttler=throttler,
-        retry=retry
+        request_wrapper=request_wrapper,
+        object_hook=object_hook
     )
 
 
@@ -43,8 +52,12 @@ def make_throttler(frequency=3):
     return Throttler(frequency=frequency)
 
 
-def make_retry(exceptions=BadHttpResponse, attempts=2, delay=0):
-    return utils.retry(
+def make_request_wrapper(
+    exceptions=asks_errors.BadHttpResponse,
+    attempts=2,
+    delay=0
+):
+    return retry.on(
         exceptions=exceptions,
         attempts=attempts,
         delay=delay

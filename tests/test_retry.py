@@ -1,14 +1,14 @@
 import pytest
 
-from async_vk_api import utils
+from async_vk_api import retry
 
 
-async def test_retry():
+async def test_single_exception():
     exc = RuntimeError
     attempts = 4
     n = 0
 
-    @utils.retry(exc, attempts=attempts)
+    @retry.on(exc, attempts=attempts)
     async def func():
         nonlocal n
         n += 1
@@ -20,12 +20,12 @@ async def test_retry():
     assert n == attempts
 
 
-async def test_retry_multiple_exceptions():
+async def test_multiple_exceptions():
     exc1, exc2 = ValueError, TypeError
     attempts = 2
     n = 0
 
-    @utils.retry((exc1, exc2), attempts=attempts)
+    @retry.on((exc1, exc2), attempts=attempts)
     async def func():
         nonlocal n
         n += 1
