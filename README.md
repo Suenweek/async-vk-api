@@ -28,14 +28,13 @@ import os
 import trio
 import async_vk_api
 
-api = async_vk_api.make_api(
-    access_token=os.getenv('VK_API_ACCESS_TOKEN'),
-    version='5.89'
-)
 
 async def main():
+    access_token = os.getenv('VK_API_ACCESS_TOKEN')
+    api = async_vk_api.make_api(access_token, version='5.89')
     users = await api.users.get(user_ids=1)
     print(users)
+
 
 if __name__ == '__main__':
     trio.run(main)
