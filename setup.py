@@ -3,12 +3,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='async-vk-api',
-    version='0.5.0',
+    version='0.5.1',
     description='Async VK API built with asks and trio',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     url='https://github.com/Suenweek/async-vk-api',
     author='Roman Novatorov',
     author_email='roman.novatorov@gmail.com',
-    install_requires=['asks', 'trio==0.10.0']
+    install_requires=['asks>=0.2.1', 'trio>=0.9.0']
 )

@@ -1,4 +1,3 @@
-import json
 import logging
 
 from .errors import ApiError
@@ -31,11 +30,7 @@ class Api:
 
         response = await make_request()
 
-        # TODO:
-        #   asks<=0.2.0 cannot forward `response.json` kwargs to `json.loads`.
-        #   Use kwargs forwarding when it is available.
-        # payload = response.json(object_hook=self._object_hook)
-        payload = json.loads(response.body, object_hook=self._object_hook)
+        payload = response.json(object_hook=self._object_hook)
 
         logger.info('%s(%s) -> %s', method_name, params, payload)
 

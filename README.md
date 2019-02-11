@@ -30,10 +30,14 @@ import async_vk_api
 
 
 async def main():
+    # Make API
     access_token = os.getenv('VK_API_ACCESS_TOKEN')
     api = async_vk_api.make_api(access_token, version='5.89')
-    users = await api.users.get(user_ids=1)
-    print(users)
+
+    # Use methods
+    user, = await api.users.get(user_ids=1)
+    assert user.id == 1
+    assert f'{user.first_name} {user.last_name}' == 'Pavel Durov'
 
 
 if __name__ == '__main__':
