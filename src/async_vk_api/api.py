@@ -1,21 +1,15 @@
-import logging
-
 from .errors import ApiError
-
-
-logger = logging.getLogger(__name__)
 
 
 class Api:
 
     def __init__(self, access_token, version, session, throttler,
-                 request_wrapper=None, object_hook=None):
+                 request_wrapper=None):
         self._access_token = access_token
         self._version = version
         self._session = session
         self._throttler = throttler
         self._request_wrapper = request_wrapper
-        self._object_hook = object_hook
 
     async def __call__(self, method_name, **params):
         async def make_request():
@@ -29,10 +23,7 @@ class Api:
             make_request = self._request_wrapper(make_request)
 
         response = await make_request()
-
-        payload = response.json(object_hook=self._object_hook)
-
-        logger.info('%s(%s) -> %s', method_name, params, payload)
+        payload = response.json()
 
         try:
             return payload['response']

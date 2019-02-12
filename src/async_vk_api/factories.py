@@ -3,7 +3,6 @@ import asks.errors as asks_errors
 
 from . import retry
 from .api import Api
-from .namespace import Namespace
 from .throttler import Throttler
 
 
@@ -12,8 +11,7 @@ def make_api(
     version,
     session=None,
     throttler=None,
-    request_wrapper=None,
-    object_hook=Namespace.from_dict
+    request_wrapper=None
 ):
     if session is None:
         session = make_session()
@@ -29,8 +27,7 @@ def make_api(
         version=version,
         session=session,
         throttler=throttler,
-        request_wrapper=request_wrapper,
-        object_hook=object_hook
+        request_wrapper=request_wrapper
     )
 
 

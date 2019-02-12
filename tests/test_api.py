@@ -9,10 +9,10 @@ async def test_api(api):
         user_ids='1,2,3',
         fields='city,verified'
     )
-    assert response.method_name == 'users.get'
-    assert response.params.user_ids == '1,2,3'
-    assert response.params.fields == 'city,verified'
-    assert 'v' in response.params
+    assert response['method_name'] == 'users.get'
+    assert response['params']['user_ids'] == '1,2,3'
+    assert response['params']['fields'] == 'city,verified'
+    assert 'v' in response['params']
 
     # Response error
     try:
@@ -23,9 +23,9 @@ async def test_api(api):
         )
     except ApiError as exc:
         response = exc.args[0]
-        assert response.method_name == 'users.get'
-        assert response.params.user_ids == '1,2,3'
-        assert response.params.fields == 'city,verified'
-        assert 'v' in response.params
+        assert response['method_name'] == 'users.get'
+        assert response['params']['user_ids'] == '1,2,3'
+        assert response['params']['fields'] == 'city,verified'
+        assert 'v' in response['params']
     else:
         pytest.fail()

@@ -36,8 +36,9 @@ async def main():
 
     # Use methods
     user, = await api.users.get(user_ids=1)
-    assert user.id == 1
-    assert f'{user.first_name} {user.last_name}' == 'Pavel Durov'
+    assert user['id'] == 1
+    assert user['first_name'] == 'Pavel'
+    assert user['last_name'] == 'Durov'
 
 
 if __name__ == '__main__':
