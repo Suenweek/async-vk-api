@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Suenweek/async-vk-api.svg?branch=master)](https://travis-ci.com/Suenweek/async-vk-api)
+[![Build Status](https://travis-ci.com/rnovatorov/async-vk-api.svg?branch=master)](https://travis-ci.com/rnovatorov/async-vk-api)
 [![codecov](https://codecov.io/gh/Suenweek/async-vk-api/branch/master/graph/badge.svg)](https://codecov.io/gh/Suenweek/async-vk-api)
 
 # async-vk-api
